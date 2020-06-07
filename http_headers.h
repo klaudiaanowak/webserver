@@ -1,3 +1,6 @@
+// Klaudia Nowak
+// 297936
+
 char hostname_localhost[] = "localhost";
 char hostname_lab[] = "lab108-18";
 char default_page[] = "index.html";
@@ -15,14 +18,14 @@ char status_301[] = "HTTP/1.1 301 Moved Permanently:\r\n";
 char status_403[] = "HTTP/1.1 403 Forbidden:\r\n"
                     "Content-Type: text/html; charset=UTF-8\r\n\r\n"
                     "<!DOCTYPE html><html><head><title>403 Forbidden</title>"
-                    "<body><h1>403 Forbidden:</h1></body></html>\r\n";;
+                    "<body><h1>403 Access forbiden</h1></body></html>\r\n";;
 
 char status_404[] = "HTTP/1.1 404 Not Found:\r\n"
                     "Content-Type: text/html; charset=UTF-8\r\n\r\n"
                     "<!DOCTYPE html><html><head><title>404 Not Found</title>"
-                    "<body><h1>404 Not Found:</h1></body></html>\r\n";
+                    "<body><h1>404 Page not found</h1></body></html>\r\n";
 
 char status_501[] = "HTTP/1.1 501 Not Implemented: \r\n"
                     "Content-Type: text/html; charset=UTF-8\r\n\r\n"
                     "<!DOCTYPE html><html><head><title>501 Not Implemented</title>"
-                    "<body><h1>501 Not Implemented: </h1></body></html>\r\n";
+                    "<body><h1>501 Not Implemented</h1></body></html>\r\n";

@@ -1,3 +1,6 @@
+// Klaudia Nowak
+// 297936
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -31,7 +34,8 @@ int main(int argc, char *argv[])
     if (sockfd < 0)
         ERROR("socket error");
 
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
+    if(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int)) < 0)
+        ERROR("socet option error");
 
     struct sockaddr_in server_address;
     bzero(&server_address, sizeof(server_address));
@@ -72,38 +76,40 @@ int main(int argc, char *argv[])
         FD_ZERO(&descriptors);
         FD_SET(connected_sockfd, &descriptors);
         struct timeval tv;
-        tv.tv_sec = 1;
-        tv.tv_usec = 0;
-        int alive = 1;
+        tv.tv_sec = 0;
+        tv.tv_usec = 500;
+        int connected = 1;
         fcntl(connected_sockfd, F_SETFL, O_NONBLOCK);
 
-        while (alive)
+        // keep connection
+        while (connected)
         {
-            alive = select(connected_sockfd + 1, &descriptors, NULL, NULL, &tv);
-            if (alive == -1)
+            // Check if request is received
+            connected = select(connected_sockfd + 1, &descriptors, NULL, NULL, &tv);
+            if (connected == -1)
             {
                 ERROR("select error");
             }
-
+            // receive requests
             int bytes_recieved;
-            while ((bytes_recieved = recv(connected_sockfd, recv_buffer, BUFFER_SIZE, 0)) > 0)
+            if ((bytes_recieved = recv(connected_sockfd, recv_buffer, BUFFER_SIZE, 0)) > 0)
             {
 
                 recv_buffer[bytes_recieved] = 0;
                 char mess[900000] = {};
-                // create response
+                // create and send response
                 int send = create_response(connected_sockfd, recv_buffer, mess);
 
                 if(send == 0)
-                    alive = 0;
+                    connected = 0;
                 else
                 {
-                    alive = 1;
+                    connected = 1;
   
                 }
 
             }
-            if (!bytes_recieved)
+            else
                 break;
         }
         if (close(connected_sockfd) < 0)

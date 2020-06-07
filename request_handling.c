@@ -1,3 +1,6 @@
+// Klaudia Nowak
+// 297936
+
 #include "request_handling.h"
 #include "http_headers.h"
 
@@ -37,7 +40,7 @@ char *find_file_type(char *type)
 		content_type = png_response;
 	else if (strcmp(type, ".html") == 0)
 		content_type = html_response;
-	else if (strcmp(type, ".text") == 0)
+	else if (strcmp(type, ".txt") == 0)
 		content_type = text_response;
 	else if ((strcmp(type, ".css") == 0) || (strcmp(type, ".map") == 0))
 		content_type = css_response;
@@ -52,7 +55,6 @@ char *find_file_type(char *type)
 
 char *set_header(char *host, char *path, char *response_header)
 {
-	char *file_type;
 
 	int newSize = strlen(host) + strlen(path) + 1;
 	char *full_path = (char *)malloc(newSize);
@@ -82,7 +84,11 @@ char *set_header(char *host, char *path, char *response_header)
 		sprintf(response_header, "%s%s", response_header, status_200);
 
 		// File type
-		char *file_type = strrchr(path, '.');
+		char *file_type;
+		if(! (file_type = strrchr(path, '.')))	{
+			sprintf(response_header, "%s", status_404);
+			return "";
+		}
 		sprintf(response_header, "%s%s", response_header, find_file_type(file_type));
 	}
 	return full_path;
@@ -128,7 +134,7 @@ int create_response(int sockfd, u_int8_t *recv_buffer, char *response_text)
 	}
 	char *path = strtok_r(first_line, " ", &first_line);
 	char *http = strtok_r(first_line, " ", &first_line);
-	
+
 	if ((!strstr(http, "HTTP/1.1")) || (strstr(path, "../")))
 	{
 		// trash - not implemented
@@ -159,7 +165,7 @@ int create_response(int sockfd, u_int8_t *recv_buffer, char *response_text)
 		connection = strtok_r(request, "\n", &request);
 		ptr = strstr(connection, "Connection");
 
-	} while (connection != ptr);
+	} while (connection != ptr && ptr);
 	strtok_r(connection, ": ", &connection);
 	connection = strtok(connection, ":");
 	if (strstr(connection, "closed"))
